@@ -1,0 +1,226 @@
+---
+title: "PleioMatchR: from 'significant but direction-random' to stratified diagnosis"
+author: "PleioMatchR developers"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{PleioMatchR workflow}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7,
+                      fig.height = 4.5)
+set.seed(20260908)
+```
+
+## Motivation
+
+A recurring finding in cross-trait GWAS analyses is *"enrichment is
+significant but the direction of effects looks random"*. This pattern can
+reflect genuine polygenic noise, but it can also hide two (or more)
+biologically distinct subgroups whose effects are internally consistent yet
+point in opposite directions. PleioMatchR is a matched-control diagnostic
+toolbox designed to tell these stories apart.
+
+This vignette reproduces the full workflow on the simulated
+T2D-to-breast-cancer style dataset shipped with the package.
+
+```{r setup}
+library(PleioMatchR)
+data(demo_sentinels, package = "PleioMatchR")
+data(demo_outcome, package = "PleioMatchR")
+data(demo_ld_scores, package = "PleioMatchR")
+
+head(demo_sentinels)
+table(demo_sentinels$pathway)
+```
+
+## Step 1 - import and harmonise
+
+`import_sumstats()` recognises common GWAS column aliases and returns a
+canonical `pmr_sumstats` table:
+
+```{r import}
+exp <- import_sumstats(demo_sentinels)
+out <- import_sumstats(demo_outcome)
+class(exp)
+head(exp)
+```
+
+If exposure and outcome tables contain overlapping variants measured in
+different allele orientations, align them first with
+`harmonise_sumstats()`:
+
+```{r harmonise, eval = FALSE}
+h <- harmonise_sumstats(exp, out)
+h$report
+```
+
+## Step 2 - genome-aware control pool
+
+The manuscript-style matching defaults are: same chromosome, MAF within
+±0.03, physical distance > 500 kb from each sentinel, and exclusion of
+outcome genome-wide-significant variants. Supplying LD scores adds an
+LD-score stratum constraint so that cases and controls share a similar
+genomic background:
+
+```{r controls}
+ctrl_plain <- build_control_pool(demo_sentinels, demo_outcome,
+                                 n_controls = 10, seed = 42)
+ctrl_lds <- build_control_pool(demo_sentinels, demo_outcome,
+                               n_controls = 10,
+                               ld_scores = demo_ld_scores, seed = 42)
+
+ctrl_lds
+summary(ctrl_lds)
+```
+
+Compare matching quality:
+
+```{r balance}
+cbind(
+  plain = ctrl_plain$diagnostics$balance,
+  lds   = ctrl_lds$diagnostics$balance
+)
+```
+
+## Step 3 - enrichment and direction test
+
+```{r test}
+res <- pleio_test(demo_sentinels, demo_outcome, controls = ctrl_lds,
+                  n_perm = 10000, seed = 1)
+res
+```
+
+The enrichment index (EI = observed/expected hits) is highly significant.
+The direction test, however, finds 15 positive / 15 negative effects:
+perfectly balanced and statistically indistinguishable from random sign
+flipping (p = 1). WDC ≈ 0 and I² ≈ 97% quantify the directional chaos.
+
+```{r plots, fig.show = 'hold'}
+plot(res, which = "butterfly")
+plot(res, which = "null")
+plot(res, which = "forest")
+```
+
+The butterfly plot carries a heuristic PRS-suitability flag: despite strong
+enrichment, this group of loci is **not** suitable for straightforward
+outcome PRS construction without further modelling.
+
+## Step 4 - is the randomness real or stratified?
+
+Both the obesity axis and the islet axis contain 15 sentinels. Re-running the
+test inside each axis changes the picture completely:
+
+```{r stratify}
+annot <- data.frame(snp = demo_sentinels$snp,
+                    pathway = demo_sentinels$pathway)
+st <- stratify_by_pathway(res, annot, n_perm = 5000, seed = 1)
+st
+```
+
+Obesity-axis loci are 15/15 positive and islet-axis loci 15/15 negative.
+This is exactly the *"shared mechanism, opposite direction by subtype"*
+scenario: the correct scientific conclusion is not "no sharing" but "two
+consistent, opposing pathways".
+
+## Step 5 - cross-ancestry drift check
+
+If the exposure is measured in one ancestry and the outcome in another,
+check allele-frequency drift before trusting direction tests:
+
+```{r ancestry}
+drift <- cross_ancestry_check(
+  demo_sentinels[1:20, c("snp", "ea", "oa", "eaf")],
+  demo_sentinels[1:20, c("snp", "ea", "oa", "eaf")],
+  label_x = "EAS", label_y = "EUR"
+)
+drift
+```
+
+Real usage supplies the two ancestry panels' allele frequencies for the same
+variants (e.g. extracted from 1000 Genomes); the function flags palindromic
+variants with non-informative MAF and variants with large |dAF| as candidates
+for exclusion or strand verification.
+
+## Calibration: what the simulations say
+
+The permutation test is exact conditional on each matched set, but it is
+good practice to confirm type-I error behaviour empirically. The following
+loop simulates 30 null datasets (no enrichment) and 10 enriched datasets:
+
+```{r calibration}
+run_null_sim <- function(seed, n_sent = 12L, n_perm = 200L) {
+  set.seed(seed)
+  pos_sent <- seq(2e6, by = 3e6, length.out = n_sent)
+  pos_ctrl <- as.vector(vapply(pos_sent, function(pp)
+    pp + c(0.7, 1.0, 1.5, 2.0, 2.5, 2.7) * 1e6, numeric(6)))
+  rows <- rbind(
+    data.frame(snp = paste0("s", seq_len(n_sent)), chr = 1L,
+               pos = pos_sent, stringsAsFactors = FALSE),
+    data.frame(snp = paste0("d", seq_along(pos_ctrl)), chr = 1L,
+               pos = pos_ctrl, stringsAsFactors = FALSE))
+  rows$ea <- sample(c("A", "C", "G", "T"), nrow(rows), replace = TRUE)
+  rows$oa <- sample(c("A", "C", "G", "T"), nrow(rows), replace = TRUE)
+  rows$eaf <- runif(nrow(rows), 0.1, 0.9)
+  rows$se <- 0.035
+  rows$p <- runif(nrow(rows), 0, 0.06)
+  sent <- data.frame(snp = paste0("s", seq_len(n_sent)), chr = 1L,
+                     pos = pos_sent, ea = rows$ea[seq_len(n_sent)],
+                     oa = rows$oa[seq_len(n_sent)],
+                     eaf = rows$eaf[seq_len(n_sent)],
+                     beta = 0.1, se = 0.03, p = 1e-10,
+                     stringsAsFactors = FALSE)
+  ctrl <- build_control_pool(sent, rows, n_controls = 6L, maf_tol = 0.5,
+                             seed = seed, verbose = FALSE)
+  pleio_test(sent, rows, controls = ctrl, p_threshold = 0.03,
+             window_kb = 100, n_perm = n_perm, seed = seed,
+             verbose = FALSE)$enrichment$p_upper
+}
+
+p_null <- vapply(1:30, run_null_sim, numeric(1))
+p_pow  <- vapply(31:40, function(s) {
+  set.seed(s)
+  ## same layout as run_null_sim() but with all case rows below threshold
+  pos_sent <- seq(2e6, by = 3e6, length.out = 12L)
+  pos_ctrl <- as.vector(vapply(pos_sent, function(pp)
+    pp + c(0.7, 1.0, 1.5, 2.0, 2.5, 2.7) * 1e6, numeric(6)))
+  rows <- rbind(data.frame(snp = paste0("s", 1:12), chr = 1L,
+                           pos = pos_sent, stringsAsFactors = FALSE),
+                data.frame(snp = paste0("d", 1:72), chr = 1L,
+                           pos = pos_ctrl, stringsAsFactors = FALSE))
+  rows$ea <- sample(c("A", "C", "G", "T"), nrow(rows), replace = TRUE)
+  rows$oa <- sample(c("A", "C", "G", "T"), nrow(rows), replace = TRUE)
+  rows$eaf <- runif(nrow(rows), 0.1, 0.9)
+  rows$se <- 0.035
+  rows$p <- runif(nrow(rows), 0, 0.06)
+  rows$p[1:12] <- 1e-9
+  sent <- data.frame(snp = paste0("s", 1:12), chr = 1L, pos = pos_sent,
+                     ea = rows$ea[1:12], oa = rows$oa[1:12],
+                     eaf = rows$eaf[1:12], beta = 0.1, se = 0.03,
+                     p = 1e-10, stringsAsFactors = FALSE)
+  ctrl <- build_control_pool(sent, rows, n_controls = 6L, maf_tol = 0.5,
+                             seed = s, verbose = FALSE)
+  pleio_test(sent, rows, controls = ctrl, p_threshold = 0.03,
+             window_kb = 100, n_perm = 200L, seed = s,
+             verbose = FALSE)$enrichment$p_upper
+}, numeric(1))
+
+cat("Type-I (null): mean p =", mean(p_null),
+    "| p<0.05:", sum(p_null < 0.05), "/ 30\n")
+cat("Power: p<0.05:", sum(p_pow < 0.05), "/ 10\n")
+```
+
+Null p-values are approximately uniform (expected ~1.5 of 30 below 0.05),
+and the enriched scenario is detected in nearly every replicate. The same
+loop, scaled up (thousands of replicates, realistic LD, multiple ancestry
+scenarios, mixed directions), is the required simulation appendix for a
+methods paper built on this package.
+
+## Where to go next
+
+* `?pleio_test`, `?build_control_pool`, `?stratify_by_pathway`
+* `?direction_heterogeneity` (WDC/I2, still descriptive)
+* `?cross_ancestry_check` (diagnostic only)
