@@ -6,3 +6,5 @@
 *.tar.gz
 PleioMatchR.Rcheck/
 work/
+__pycache__/
+*.pyc

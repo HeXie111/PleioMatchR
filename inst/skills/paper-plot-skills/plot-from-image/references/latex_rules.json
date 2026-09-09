@@ -1,0 +1,33 @@
+{
+  "$comment": "Label -> mathtext/LaTeX conversion dictionary used by latexify_labels.py. Patterns are applied in listed order; rules live here so the library can grow without touching code.",
+  "greek": {
+    "alpha": "\\alpha", "beta": "\\beta", "gamma": "\\gamma", "delta": "\\delta",
+    "epsilon": "\\epsilon", "zeta": "\\zeta", "eta": "\\eta", "theta": "\\theta",
+    "kappa": "\\kappa", "lambda": "\\lambda", "mu": "\\mu", "nu": "\\nu",
+    "xi": "\\xi", "pi": "\\pi", "rho": "\\rho", "sigma": "\\sigma",
+    "tau": "\\tau", "phi": "\\phi", "chi": "\\chi", "psi": "\\psi", "omega": "\\omega"
+  },
+  "words": {
+    "beta-hat": "\\hat{\\beta}",
+    "beta hat": "\\hat{\\beta}",
+    "p-value": "p",
+    "p value": "p",
+    "r squared": "R^2",
+    "r2": "R^2",
+    "log2fc": "\\log_2\\text{FC}",
+    "minus log10 p": "-\\log_{10}(p)",
+    "95% ci": "95\\%\\ \\text{CI}"
+  },
+  "patterns": [
+    {"regex": "(?i)\\bR\\^?2\\b", "replacement": "R^{2}"},
+    {"regex": "10\\^([-+]?\\d+)", "replacement": "10^{\\1}"},
+    {"regex": "x10\\^([-+]?\\d+)", "replacement": "\\times 10^{\\1}"},
+    {"regex": "([A-Za-z]+)_([A-Za-z0-9]+)", "replacement": "\\1_{\\2}"},
+    {"regex": "(?i)([a-z]+)-hat", "replacement": "\\hat{\\1}"}
+  ],
+  "symbols": {
+    "pm": "\\pm", "times": "\\times", "leq": "\\leq", "geq": "\\geq",
+    "infinity": "\\infty", "degree": "^{\\circ}"
+  },
+  "notes": "matplotlib mathtext (r'$...$') does not need full LaTeX; STIX/CM mathtext fontsets render these rules. Full LaTeX journals can wrap the same string with usetex=True."
+}

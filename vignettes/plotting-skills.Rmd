@@ -1,0 +1,80 @@
+---
+title: "AI Plotting Skills (paper-plot-skills v2)"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{AI Plotting Skills (paper-plot-skills v2)}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(eval = FALSE)
+```
+
+## 概述
+
+PleioMatchR 随包携带一套升级版学术绘图 skills
+（`inst/skills/paper-plot-skills/`，11 个 `SKILL.md`）。它们把
+PleioMatchR 的关联诊断结果（`pmr_pleio`）与 TwoSampleMR 的结果表接到
+可复现、可投稿的绘图流程上：统计检验、配色安全、期刊规范一站式完成。
+
+## 套件清单
+
+| Skill | 功能 |
+|-------|------|
+| plot-style-search | 自然语言检索风格（森林图/火山图/生存曲线…） |
+| plot-from-data | 按预置风格填数据出图（11 个风格模板） |
+| plot-from-image | 图片分层解析、数据反估 CSV、LaTeX 标签 |
+| plot-style-transfer | matplotlib / seaborn / ggplot2 / origin 等价代码 |
+| check-colorblind | CVD 色盲安全校验 + Okabe-Ito 换色建议 |
+| plot-batch-style | 全局 rcParams 批量统一 |
+| plot-with-stats | 配对 t / meta 森林图 / 火山图+FDR |
+| plot-with-table | 图 + 统计表一体（MR 方法汇总） |
+| plot-panel | 多子图拼 (a)(b)(c)(d) |
+| plot-check-journal | 投稿规范检查报告 |
+
+## PleioMatchR 联动示例
+
+先跑 `pleio_test()`，把 `locus_table` 导出成森林图脚本的输入：
+
+```{r pleio-export, eval = FALSE}
+data(demo_sentinels, package = "PleioMatchR")
+data(demo_outcome, package = "PleioMatchR")
+ctrl <- build_control_pool(demo_sentinels, demo_outcome,
+                           n_controls = 6, seed = 42, verbose = FALSE)
+res <- pleio_test(demo_sentinels, demo_outcome, controls = ctrl,
+                  n_perm = 200, seed = 1, verbose = FALSE)
+
+write.table(res$locus_table[, c("sentinel_id", "aligned_beta",
+                                "aligned_se", "hit")],
+            "locus_table.tsv", sep = "\t", quote = FALSE, row.names = FALSE)
+```
+
+然后用套件里的统计森林图（固定/随机效应 + I² + 汇总菱形）：
+
+```{bash pleio-forest, eval = FALSE}
+python inst/skills/paper-plot-skills/plot-with-stats/scripts/forest_metaanalysis.py \
+  --input locus_table.tsv --scale beta --hit-col hit \
+  --out forest.png --table meta_stats.csv --journal nature
+```
+
+MR 方法级汇总（IVW / weighted median / MR-Egger）直接喂给
+`plot-with-table`，一次得到图 + 排版一致的 supplementary 表格：
+
+```{bash mr-table, eval = FALSE}
+python inst/skills/paper-plot-skills/plot-with-table/scripts/figure_plus_table.py \
+  --input mr_methods.csv --out-dir mr_results/ --journal nature
+```
+
+## 与 base-R 绘图的关系
+
+PleioMatchR 自带的 `plot(res, which = "forest")` 等 base 图形保持可用；
+本套件面向“AI 辅助、可再编辑、可投稿”的长尾场景（Arial 字体、300–600 dpi、
+TIFF/SVG、色盲安全色板、期刊规范检查）。两者不冲突：快速诊断用包内 plot
+方法，正式图表走套件。
+
+## 更多资料
+
+- 数据契约：`inst/skills/paper-plot-skills/data-contracts.md`
+- 风格目录：`inst/skills/paper-plot-skills/catalog/styles.json`
+- 期刊规范：`inst/skills/paper-plot-skills/catalog/journal_specs.json`
