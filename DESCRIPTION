@@ -1,0 +1,35 @@
+Package: PleioMatchR
+Type: Package
+Title: Diagnostic Tools for Cross-Trait GWAS Sharing
+Version: 0.1.0
+Authors@R: person("PleioMatchR", "Developers",
+    email = "pleiomatchr.developers@example.com",
+    role = c("aut", "cre"))
+Description: A matched-control, permutation-based framework for
+    diagnosing whether a predefined set of trait-associated loci shows
+    association enrichment, consistent effect direction, or
+    pathway-stratified sharing in a second genome-wide association study
+    (GWAS).  The package implements control-pool construction with
+    chromosome, minor-allele-frequency, physical-distance and optional
+    LD-score stratification; shared-control paired permutation tests for
+    enrichment; sign-flip direction tests and weighted direction
+    diagnostics; cross-ancestry allele-frequency drift checks; and
+    base-graphics visualisation ('butterfly', null-distribution and
+    forest plots).  All results are association-level diagnostics and do
+    not imply causal relationships.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Depends: R (>= 3.6.0)
+Imports:
+    graphics,
+    grDevices,
+    stats,
+    utils
+Suggests:
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
+LazyData: true
+URL: https://github.com/PleioMatchR/PleioMatchR
+BugReports: https://github.com/PleioMatchR/PleioMatchR/issues
+NeedsCompilation: no
