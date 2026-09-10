@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Layer inventory produced by the layered parser in plot-from-image v2. The agent writes layers.json describing every visual element; pixel_to_data.py converts marked points into data coordinates.",
+  "title": "PaperFigureLayerInventory",
+  "type": "object",
+  "required": ["figure", "image_px", "axes", "layers"],
+  "properties": {
+    "figure": {
+      "type": "object",
+      "required": ["name", "library_hint", "aspect_ratio"],
+      "properties": {
+        "name": { "type": "string" },
+        "library_hint": {
+          "type": "string",
+          "enum": ["matplotlib", "ggplot2", "base-R", "origin", "seaborn", "unknown"]
+        },
+        "aspect_ratio": { "type": "number", "description": "width / height of the whole image" },
+        "journal_hint": { "type": "string", "description": "Nature-style / Cell-style / ... when recognisable" }
+      }
+    },
+    "image_px": {
+      "type": "object",
+      "required": ["width", "height"],
+      "properties": {
+        "width": { "type": "integer" },
+        "height": { "type": "integer" }
+      }
+    },
+    "axes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "bbox_px", "data_range"],
+        "properties": {
+          "id": { "type": "string", "description": "ax1, ax2, inset_1, ..." },
+          "bbox_px": {
+            "type": "object",
+            "required": ["x0", "y0", "x1", "y1"],
+            "description": "pixel rectangle of the plot area (origin top-left)"
+          },
+          "data_range": {
+            "type": "object",
+            "properties": {
+              "x": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
+              "y": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
+              "x_log": { "type": "boolean" },
+              "y_log": { "type": "boolean" }
+            }
+          },
+          "axis_labels": {
+            "type": "object",
+            "properties": {
+              "x": { "type": "string" },
+              "y": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "layers": {
+      "type": "array",
+      "description": "semantic elements in drawing order",
+      "items": {
+        "type": "object",
+        "required": ["type", "axes_id", "bbox_px"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "axes_frame", "gridline", "tick", "axis_label", "title",
+              "bar", "series_line", "scatter_points", "error_bar",
+              "filled_region", "annotation_box", "text_label", "formula_label",
+              "arrow", "legend", "inset", "table_cell", "axis_break"
+            ]
+          },
+          "axes_id": { "type": "string" },
+          "bbox_px": {
+            "type": "object",
+            "required": ["x0", "y0", "x1", "y1"]
+          },
+          "style": {
+            "type": "object",
+            "description": "free-form style tokens: colour, linewidth, dash, marker, alpha, fontsize, hatch, ..."
+          },
+          "text": { "type": "string", "description": "raw OCR text / formula for text-like layers" },
+          "data_points_px": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "px": { "type": "number" },
+                "py": { "type": "number" },
+                "series_id": { "type": "string" }
+              }
+            },
+            "description": "optional pixel samples for reverse data estimation"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,3 +1,21 @@
+# PleioMatchR 0.2.0 (2026-09-09)
+
+## AI plotting-skills suite (`inst/skills/paper-plot-skills`, v2)
+
+* Vendored upgrade of paper-plot-skills: 11 Codex/AI skills for academic
+  figures with tagged style catalog, colour-blind-safe palettes, layered
+  figure parsing with reverse data estimation to CSV, LaTeX label conversion,
+  cross-library style transfer (matplotlib / seaborn / ggplot2 / origin-py),
+  batch rcParams unification and journal-compliance checking.
+* Statistics-aware plotting: paired bar + paired t-test with significance
+  stars, meta-analysis forest with fixed/random effects and I2, volcano +
+  BH-FDR, Kaplan-Meier + log-rank.
+* `plot-with-table` renders a figure and its supplementary table from one
+  method-level CSV (TwoSampleMR `mr()` compatible).
+* PleioMatchR linkage: `pmr_pleio` `locus_table` exports directly to the
+  forest-meta contract (see `inst/skills/paper-plot-skills/data-contracts.md`
+  and `vignettes/plotting-skills.Rmd`).
+
 # PleioMatchR 0.1.0 (2026-09-08)
 
 ## MVP release

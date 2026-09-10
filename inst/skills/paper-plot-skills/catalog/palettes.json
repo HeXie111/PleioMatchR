@@ -1,0 +1,55 @@
+{
+  "$comment": "Color-blind-safe palette library. `colorblind_safe: true` means the palette passes the Okabe-Ito / ColorBrewer CVD guidance used by check-colorblind.",
+  "version": "2.0.0",
+  "palettes": [
+    {
+      "id": "okabe-ito",
+      "name": "Okabe-Ito",
+      "colorblind_safe": true,
+      "colors": ["#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7"],
+      "notes": "The default CVD-safe categorical palette (Okabe & Ito 2008)."
+    },
+    {
+      "id": "brewer-dark2",
+      "name": "ColorBrewer Dark2",
+      "colorblind_safe": true,
+      "colors": ["#1B9E77", "#D95F02", "#7570B3", "#E7298A", "#66A61E", "#E6AB02", "#A6761D", "#666666"],
+      "notes": "8-class qualitative, recommended when >6 Okabe-Ito categories are needed."
+    },
+    {
+      "id": "brewer-set2",
+      "name": "ColorBrewer Set2",
+      "colorblind_safe": true,
+      "colors": ["#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F", "#E5C494", "#B3B3B3"],
+      "notes": "Pastel qualitative scheme; pair with strong symbol/line encoding for print."
+    },
+    {
+      "id": "brewer-set1",
+      "name": "ColorBrewer Set1",
+      "colorblind_safe": false,
+      "colors": ["#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "#FFFF33", "#A65628", "#F781BF", "#999999"],
+      "notes": "NOT fully CVD safe (red/green pair). Swap via check-colorblind when needed."
+    },
+    {
+      "id": "brewer-paired",
+      "name": "ColorBrewer Paired",
+      "colorblind_safe": false,
+      "colors": ["#A6CEE3", "#1F78B4", "#B2DF8A", "#33A02C", "#FB9A99", "#E31A1C", "#FDBF6F", "#FF7F00", "#CAB2D6", "#6A3D9A", "#FFFF99", "#B15928"],
+      "notes": "12-step light/dark pairs; long series only."
+    },
+    {
+      "id": "viridis",
+      "name": "viridis (12-step)",
+      "colorblind_safe": true,
+      "colors": ["#440154", "#482173", "#433e85", "#38588c", "#2d708e", "#25858e", "#1e9b8a", "#2ab07f", "#52c569", "#86d549", "#c2df23", "#fde725"],
+      "notes": "Perceptually uniform sequential map, CVD-safe luminance ramp."
+    },
+    {
+      "id": "cvd-safe-diverging",
+      "name": "CVD-safe diverging (blue - light - orange)",
+      "colorblind_safe": true,
+      "colors": ["#2166AC", "#67A9CF", "#D1E5F0", "#F7F7F7", "#FDDBC7", "#EF8A62", "#B2182B"],
+      "notes": "ColorBrewer RdBu-style diverging without a red/green axis."
+    }
+  ]
+}

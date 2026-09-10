@@ -1,0 +1,116 @@
+{
+  "$comment": "Journal figure specifications used by plot-check-journal and plot-batch-style. Font sizes / line widths are the commonly cited submission values; always verify against the journal's current author guidelines before final submission.",
+  "version": "2.0.0",
+  "journals": {
+    "nature": {
+      "label": "Nature",
+      "font_family": ["Arial", "Helvetica", "sans-serif"],
+      "font_size_pt": { "min": 7, "max": 8 },
+      "line_width_pt": { "min": 0.5, "max": 1.0 },
+      "dpi": { "min": 300, "recommended": 300 },
+      "formats": ["tiff", "png", "pdf", "svg", "eps"],
+      "panel_width_mm": { "single": 89, "double": 183 },
+      "color_mode": "RGB",
+      "notes": "Arial/Helvetica 7-8pt text; 300 dpi minimum for colour images."
+    },
+    "nature_communications": {
+      "label": "Nature Communications",
+      "font_family": ["Arial", "Helvetica", "sans-serif"],
+      "font_size_pt": { "min": 7, "max": 8 },
+      "line_width_pt": { "min": 0.5, "max": 1.0 },
+      "dpi": { "min": 300, "recommended": 300 },
+      "formats": ["tiff", "png", "pdf", "svg", "eps"],
+      "panel_width_mm": { "single": 89, "double": 183 },
+      "color_mode": "RGB",
+      "notes": "Same figure rules as Nature."
+    },
+    "cell": {
+      "label": "Cell",
+      "font_family": ["Arial", "Helvetica", "sans-serif"],
+      "font_size_pt": { "min": 7, "max": 9 },
+      "line_width_pt": { "min": 0.5, "max": 1.0 },
+      "dpi": { "min": 300, "recommended": 600 },
+      "formats": ["tiff", "png", "pdf", "svg", "eps"],
+      "panel_width_mm": { "single": 89, "double": 183 },
+      "color_mode": "RGB",
+      "notes": "Type is Arial/Helvetica; multi-panel letters 9pt bold."
+    },
+    "science": {
+      "label": "Science",
+      "font_family": ["Arial", "Helvetica", "sans-serif"],
+      "font_size_pt": { "min": 7, "max": 9 },
+      "line_width_pt": { "min": 0.5, "max": 1.0 },
+      "dpi": { "min": 300, "recommended": 300 },
+      "formats": ["tiff", "png", "pdf", "svg", "eps"],
+      "panel_width_mm": { "single": 89, "double": 183 },
+      "color_mode": "RGB",
+      "notes": "Preferred fonts Arial, Helvetica, or sans-serif typefaces."
+    },
+    "plos_one": {
+      "label": "PLOS ONE",
+      "font_family": ["Arial", "Helvetica", "Times New Roman", "sans-serif", "serif"],
+      "font_size_pt": { "min": 7, "max": 12 },
+      "line_width_pt": { "min": 0.5, "max": 2.0 },
+      "dpi": { "min": 300, "recommended": 300 },
+      "formats": ["tiff", "png", "pdf", "eps", "svg", "jpg"],
+      "panel_width_mm": { "single": 89, "double": 183 },
+      "color_mode": "RGB",
+      "notes": "A broad range is accepted; keep fonts legible at final size."
+    },
+    "bmj": {
+      "label": "BMJ",
+      "font_family": ["Arial", "Helvetica", "sans-serif"],
+      "font_size_pt": { "min": 8, "max": 9 },
+      "line_width_pt": { "min": 0.5, "max": 1.5 },
+      "dpi": { "min": 300, "recommended": 600 },
+      "formats": ["tiff", "png", "pdf", "svg", "eps"],
+      "panel_width_mm": { "single": 84, "double": 176 },
+      "color_mode": "RGB",
+      "notes": "Figures should be legible when printed single or double column."
+    },
+    "lancet": {
+      "label": "The Lancet",
+      "font_family": ["Arial", "Helvetica", "sans-serif"],
+      "font_size_pt": { "min": 7, "max": 8 },
+      "line_width_pt": { "min": 0.5, "max": 1.0 },
+      "dpi": { "min": 300, "recommended": 300 },
+      "formats": ["tiff", "png", "pdf", "svg", "eps"],
+      "panel_width_mm": { "single": 90, "double": 185 },
+      "color_mode": "RGB",
+      "notes": "Sans-serif type recommended; forest plots common in clinical papers."
+    },
+    "jama": {
+      "label": "JAMA",
+      "font_family": ["Arial", "Helvetica", "sans-serif"],
+      "font_size_pt": { "min": 7, "max": 9 },
+      "line_width_pt": { "min": 0.5, "max": 1.0 },
+      "dpi": { "min": 350, "recommended": 350 },
+      "formats": ["tiff", "png", "pdf", "eps"],
+      "panel_width_mm": { "single": 90, "double": 185 },
+      "color_mode": "RGB",
+      "notes": "350 dpi minimum for color; TIFF preferred."
+    },
+    "nejm": {
+      "label": "NEJM",
+      "font_family": ["Arial", "Helvetica", "sans-serif"],
+      "font_size_pt": { "min": 7, "max": 9 },
+      "line_width_pt": { "min": 0.5, "max": 1.0 },
+      "dpi": { "min": 300, "recommended": 300 },
+      "formats": ["tiff", "png", "pdf", "svg", "eps"],
+      "panel_width_mm": { "single": 90, "double": 185 },
+      "color_mode": "RGB",
+      "notes": "Sans-serif fonts preferred for figures."
+    },
+    "elife": {
+      "label": "eLife",
+      "font_family": ["Arial", "Helvetica", "sans-serif", "serif"],
+      "font_size_pt": { "min": 7, "max": 9 },
+      "line_width_pt": { "min": 0.5, "max": 1.0 },
+      "dpi": { "min": 300, "recommended": 300 },
+      "formats": ["tiff", "png", "pdf", "svg", "eps"],
+      "panel_width_mm": { "single": 88, "double": 180 },
+      "color_mode": "RGB",
+      "notes": "300 dpi minimum; color-blind-safe palettes encouraged."
+    }
+  }
+}
